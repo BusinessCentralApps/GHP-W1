@@ -9,12 +9,12 @@ on:
         default: false
 
 permissions:
-  contents: read
   actions: read
+  contents: read
 
 defaults:
   run:
-    shell: powershell
+    shell: pwsh
 
 env:
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
@@ -22,16 +22,16 @@ env:
 
 jobs:
   Troubleshooting:
-    runs-on: [ windows-latest ]
+    runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           lfs: true
 
       - name: Troubleshooting
         uses: freddydk/AL-Go/Actions/Troubleshooting@nuget
         with:
-          shell: powershell
+          shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           displayNameOfSecrets: ${{ github.event.inputs.displayNameOfSecrets }}

@@ -17,11 +17,13 @@ on:
         default: false
 
 permissions:
+  actions: read
   contents: read
+  id-token: write
 
 defaults:
   run:
-    shell: powershell
+    shell: pwsh
 
 env:
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
@@ -31,34 +33,33 @@ jobs:
   UpdateALGoSystemFiles:
     name: 'Update AL-Go System Files'
     needs: [ ]
-    runs-on: [ windows-latest ]
+    runs-on: [ ubuntu-latest ]
     steps:
       - name: Dump Workflow Information
         uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@nuget
         with:
-          shell: powershell
+          shell: pwsh
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Initialize the workflow
         id: init
         uses: freddydk/AL-Go/Actions/WorkflowInitialize@nuget
         with:
-          shell: powershell
-          eventId: "DO0098"
+          shell: pwsh
 
       - name: Read settings
         uses: freddydk/AL-Go/Actions/ReadSettings@nuget
         with:
-          shell: powershell
+          shell: pwsh
           get: templateUrl
 
       - name: Read secrets
         id: ReadSecrets
         uses: freddydk/AL-Go/Actions/ReadSecrets@nuget
         with:
-          shell: powershell
+          shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
 
@@ -94,7 +95,7 @@ jobs:
       - name: Update AL-Go system files
         uses: freddydk/AL-Go/Actions/CheckForUpdates@nuget
         with:
-          shell: powershell
+          shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
@@ -104,7 +105,9 @@ jobs:
       - name: Finalize the workflow
         if: always()
         uses: freddydk/AL-Go/Actions/WorkflowPostProcess@nuget
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          shell: powershell
-          eventId: "DO0098"
+          shell: pwsh
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          currentJobContext: ${{ toJson(job) }}

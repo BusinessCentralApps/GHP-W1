@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
   actions: read
+  contents: read
+  id-token: write
 
 defaults:
   run:
@@ -21,13 +22,11 @@ jobs:
     needs: [ ]
     runs-on: [ ubuntu-latest ]
     outputs:
-      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-      githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
-      githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
       projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
       projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
+      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
         uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@nuget
@@ -35,7 +34,7 @@ jobs:
           shell: pwsh
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           lfs: true
 
@@ -44,7 +43,6 @@ jobs:
         uses: freddydk/AL-Go/Actions/WorkflowInitialize@nuget
         with:
           shell: pwsh
-          eventId: "DO0101"
 
       - name: Read settings
         id: ReadSettings
@@ -75,9 +73,8 @@ jobs:
     uses: ./.github/workflows/_BuildALGoProject.yaml
     secrets: inherit
     with:
-      shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-      runsOn: ${{ needs.Initialization.outputs.githubRunner }}
-      parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+      shell: ${{ matrix.githubRunnerShell }}
+      runsOn: ${{ matrix.githubRunner }}
       project: ${{ matrix.project }}
       projectName: ${{ matrix.projectName }}
       buildMode: ${{ matrix.buildMode }}
@@ -92,12 +89,14 @@ jobs:
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Finalize the workflow
         id: PostProcess
         uses: freddydk/AL-Go/Actions/WorkflowPostProcess@nuget
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           shell: pwsh
-          eventId: "DO0101"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          currentJobContext: ${{ toJson(job) }}
