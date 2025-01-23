@@ -5,8 +5,5 @@
   "useCompilerFolder": true,
   "doNotPublishApps": true,
   "gitHubRunner": "ubuntu-latest",
-  "runs-on": "ubuntu-latest",
-  "CICDPullRequestBranches": [
-    "dummy"
-  ]
+  "runs-on": "ubuntu-latest"
 }
