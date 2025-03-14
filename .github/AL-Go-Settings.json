@@ -1,7 +1,7 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/freddydk/AL-Go@noPAT",
-  "templateSha": "d43735a2cce6ec14ac143fc812d8a8e829e3448a",
+  "templateUrl": "https://github.com/freddydk/AL-Go@issue1502",
+  "templateSha": "1183b1a592b3b0ab35982eda8b91f1544bb7e42b",
   "useCompilerFolder": true,
   "doNotPublishApps": true,
   "gitHubRunner": "ubuntu-latest",

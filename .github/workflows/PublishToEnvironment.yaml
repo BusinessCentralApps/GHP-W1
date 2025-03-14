@@ -36,7 +36,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@noPAT
+        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@issue1502
         with:
           shell: pwsh
 
@@ -45,19 +45,19 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@noPAT
+        uses: freddydk/AL-Go/Actions/WorkflowInitialize@issue1502
         with:
           shell: pwsh
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go/Actions/ReadSettings@noPAT
+        uses: freddydk/AL-Go/Actions/ReadSettings@issue1502
         with:
           shell: pwsh
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: freddydk/AL-Go/Actions/DetermineDeploymentEnvironments@noPAT
+        uses: freddydk/AL-Go/Actions/DetermineDeploymentEnvironments@issue1502
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -75,7 +75,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@noPAT
+        uses: freddydk/AL-Go/Actions/ReadSecrets@issue1502
         if: steps.DetermineDeploymentEnvironments.outputs.UnknownEnvironment == 1
         with:
           shell: pwsh
@@ -107,7 +107,7 @@ jobs:
             Write-Host "No AuthContext provided for $envName, initiating Device Code flow"
             $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
             $webClient = New-Object System.Net.WebClient
-            $webClient.DownloadFile('https://raw.githubusercontent.com/freddydk/AL-Go/noPAT/Actions/AL-Go-Helper.ps1', $ALGoHelperPath)
+            $webClient.DownloadFile('https://raw.githubusercontent.com/freddydk/AL-Go/issue1502/Actions/AL-Go-Helper.ps1', $ALGoHelperPath)
             . $ALGoHelperPath
             DownloadAndImportBcContainerHelper
             $authContext = New-BcAuthContext -includeDeviceLogin -deviceLoginTimeout ([TimeSpan]::FromSeconds(0))
@@ -141,21 +141,21 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@noPAT
+        uses: freddydk/AL-Go/Actions/ReadSettings@issue1502
         with:
           shell: ${{ matrix.shell }}
           get: type,powerPlatformSolutionFolder
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@noPAT
+        uses: freddydk/AL-Go/Actions/ReadSecrets@issue1502
         with:
           shell: ${{ matrix.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext'
 
       - name: Get Artifacts for deployment
-        uses: freddydk/AL-Go/Actions/GetArtifactsForDeployment@noPAT
+        uses: freddydk/AL-Go/Actions/GetArtifactsForDeployment@issue1502
         with:
           shell: ${{ matrix.shell }}
           artifactsVersion: ${{ github.event.inputs.appVersion }}
@@ -163,7 +163,7 @@ jobs:
 
       - name: Deploy to Business Central
         id: Deploy
-        uses: freddydk/AL-Go/Actions/Deploy@noPAT
+        uses: freddydk/AL-Go/Actions/Deploy@issue1502
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -175,7 +175,7 @@ jobs:
 
       - name: Deploy to Power Platform
         if: env.type == 'PTE' && env.powerPlatformSolutionFolder != ''
-        uses: freddydk/AL-Go/Actions/DeployPowerPlatform@noPAT
+        uses: freddydk/AL-Go/Actions/DeployPowerPlatform@issue1502
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -194,7 +194,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@noPAT
+        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@issue1502
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
