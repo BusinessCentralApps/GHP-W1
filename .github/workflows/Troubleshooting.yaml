@@ -30,7 +30,7 @@ jobs:
           lfs: true
 
       - name: Troubleshooting
-        uses: freddydk/AL-Go/Actions/Troubleshooting@issue1502
+        uses: freddydk/AL-Go/Actions/Troubleshooting@githubpackages
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
