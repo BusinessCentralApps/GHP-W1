@@ -6,5 +6,6 @@
   "doNotPublishApps": true,
   "gitHubRunner": "ubuntu-latest",
   "runs-on": "ubuntu-latest",
-  "nuGetFeedSelectMode": "EarliestMatching"
+  "nuGetFeedSelectMode": "EarliestMatching",
+  "PullRequestTrigger": "pull_request"
 }
